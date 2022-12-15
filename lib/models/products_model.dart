@@ -1,4 +1,3 @@
-
 class ProductsModel {
   List<Products>? products;
   List<Categories>? categories;
@@ -58,17 +57,17 @@ class Products {
 
   Products(
       {this.id,
-        this.title,
-        this.description,
-        this.price,
-        this.discountPercentage,
-        this.rating,
-        this.stock,
-        this.brand,
-        this.category,
-        this.thumbnail,
-        this.images,
-        this.favorite});
+      this.title,
+      this.description,
+      this.price,
+      this.discountPercentage,
+      this.rating,
+      this.stock,
+      this.brand,
+      this.category,
+      this.thumbnail,
+      this.images,
+      this.favorite});
 
   Products.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -8,10 +8,10 @@ import 'package:untitled/Favorite/favorite.dart';
 import 'package:untitled/Favorite/favorite_controller.dart';
 import 'package:untitled/Grocery/grocery.dart';
 import 'package:untitled/Home/home_controller.dart';
-import 'package:untitled/model/cart_model.dart';
 
 import '../Cart/Cart.dart';
-import '../model/deals_model.dart';
+import '../models/cart_model.dart';
+import '../models/deals_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,40 +21,44 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final controller =Get.put(HomeController());
-  final cartController =Get.put(CartController());
-  final favController =Get.put(FavoriteController());
-  final box =GetStorage();
+  final controller = Get.put(HomeController());
+  final cartController = Get.put(CartController());
+  final favController = Get.put(FavoriteController());
+  final box = GetStorage();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async{
-      String cartSave= await box.read('Cart');
-      String favSave= await box.read('Fav');
-      if(cartSave.isNotEmpty && cartSave.isNotEmpty){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String cartSave = await box.read('Cart');
+      String favSave = await box.read('Fav');
+      if (cartSave.isNotEmpty && cartSave.isNotEmpty) {
         final listCart = jsonDecode(cartSave) as List<dynamic>;
-        final listCartParsed = listCart.map((e) => CartModel.fromJson(e)).toList();
-         if (listCartParsed.isNotEmpty) cartController.cart.value =listCartParsed;
+        final listCartParsed =
+            listCart.map((e) => CartModel.fromJson(e)).toList();
+        if (listCartParsed.isNotEmpty)
+          cartController.cart.value = listCartParsed;
       }
-      if(favSave.isNotEmpty && favSave.isNotEmpty){
+      if (favSave.isNotEmpty && favSave.isNotEmpty) {
         final listCart = jsonDecode(favSave) as List<dynamic>;
         final listCartParsed = listCart.map((e) => Deals.fromJson(e)).toList();
-         if (listCartParsed.isNotEmpty) favController.favList.value =listCartParsed;
+        if (listCartParsed.isNotEmpty)
+          favController.favList.value = listCartParsed;
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
-
-    final cartController= Get.put(CartController());
+    final cartController = Get.put(CartController());
     return SafeArea(
       child: GetBuilder<HomeController>(
         builder: (context) => Scaffold(
           floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked,
+              FloatingActionButtonLocation.centerDocked,
           floatingActionButton: Obx(
-                ()=> FloatingActionButton(
+            () => FloatingActionButton(
               onPressed: () {},
               child: Text(
                 '\$${cartController.sumCart()}',
@@ -104,7 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
             index: controller.tabIndex,
             children: [
               GroceryScreen(),
-              const Center(child: Text('News',style: TextStyle(fontSize: 24),)),
+              const Center(
+                  child: Text(
+                'News',
+                style: TextStyle(fontSize: 24),
+              )),
               Container(),
               FavoriteScreen(),
               CartScreen(),
@@ -114,6 +122,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  }
-
-
+}

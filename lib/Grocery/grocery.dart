@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:untitled/Cart/cart_controller.dart';
 import 'package:untitled/Favorite/favorite_controller.dart';
 
-import '../model/cart_model.dart';
-import '../model/deals_model.dart';
+import '../models/address_model.dart';
+import '../models/cart_model.dart';
+import '../models/deals_model.dart';
+import '../models/products_model.dart';
 
 class GroceryScreen extends StatelessWidget {
   GroceryScreen({
@@ -109,15 +112,17 @@ class GroceryScreen extends StatelessWidget {
             ),
           ),
           FutureBuilder(
-            future: DefaultAssetBundle.of(context)
-                .loadString('assets/data/add.json'),
+            future: loadData('assets/data/add.json', AddressModel()),
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
-              } else if (snapshot.hasData) {
-                var showData = json.decode(snapshot.data!);
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
+              } else {
+                var listAddress = snapshot.data;
+                // print(listAddress);
                 return Container(
                   constraints: const BoxConstraints(
                     maxHeight: 100,
@@ -125,8 +130,8 @@ class GroceryScreen extends StatelessWidget {
                   ),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    physics: BouncingScrollPhysics(),
-                    itemCount: showData['addresses'].length,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: listAddress!.addresses!.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -156,12 +161,12 @@ class GroceryScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '${showData['addresses'][index]['address']}',
+                                      '${listAddress.addresses![index].address}',
                                     ),
                                     SizedBox(
                                       width: 96,
                                       child: Text(
-                                        '${showData['addresses'][index]['details']}',
+                                        '${listAddress.addresses![index].details}',
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w300,
@@ -179,21 +184,18 @@ class GroceryScreen extends StatelessWidget {
                     },
                   ),
                 );
-              } else if (snapshot.hasError) {
-                return const Text('x');
-              } else {
-                return const CircularProgressIndicator();
               }
             },
           ),
           FutureBuilder(
+            future: loadData('assets/data/products.json', ProductsModel),
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasData) {
-                var showData = json.decode(snapshot.data!);
+                var showData = snapshot.data;
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
@@ -209,13 +211,11 @@ class GroceryScreen extends StatelessWidget {
                   ),
                 );
               } else if (snapshot.hasError) {
-                return const Text('x');
+                return Text('${snapshot.error}');
               } else {
                 return const CircularProgressIndicator();
               }
             },
-            future: DefaultAssetBundle.of(context)
-                .loadString('assets/data/products.json'),
           ),
           FutureBuilder(
             builder: (BuildContext context, snapshot) {
@@ -262,7 +262,7 @@ class GroceryScreen extends StatelessWidget {
                   ),
                 );
               } else if (snapshot.hasError) {
-                return const Text('x');
+                return Text('${snapshot.error}');
               } else {
                 return const CircularProgressIndicator();
               }
@@ -327,8 +327,15 @@ class GroceryScreen extends StatelessWidget {
                                       onPressed: () async {
                                         if (isExistsInFav(
                                             favController.favList, dealsItem)) {
+                                          var productUpdate = favController
+                                              .favList
+                                              .firstWhere((element) =>
+                                                  element.id ==
+                                                  showData['deals'][index]
+                                                      ['id']);
+
                                           favController.favList
-                                              .remove(dealsItem);
+                                              .remove(productUpdate);
                                         } else {
                                           favController
                                               .addFavItemToList(dealsItem);
@@ -438,11 +445,7 @@ class GroceryScreen extends StatelessWidget {
                   ),
                 );
               } else if (snapshot.hasError) {
-                print(snapshot.error.toString());
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('${snapshot.error}'),
-                );
+                return Text('${snapshot.error}');
               } else {
                 return const CircularProgressIndicator();
               }
@@ -514,11 +517,42 @@ class GroceryScreen extends StatelessWidget {
     );
   }
 
-  // Future<List<Products>> readJsonDatabase() async{
-  //    final rawData = await rootBundle.loadString('assets/data/products.json');
-  //    final list = json.decode(rawData) as List<dynamic>;
-  //    return list.map((e) => Products.fromJson(e)).toList();
+  // Future<List<Addresses>> readJsonDatabase() async {
+  //   final String rawData = await rootBundle.loadString('assets/data/add.json');
+  //   var list = json.decode(rawData);
+  //   print('list data in fun af ${list['addresses']}');
+  //
+  //   Addresses address = Addresses.fromJson(list['addresses']);
+  //   print('list data in fun be${address.address}');
+  //
+  //    List<Addresses> addresses = [];
+  //   // for (var data in list) {
+  //   //   AddressModel address = AddressModel.fromJson(data['addresses']);
+  //   //   addresses.add(address);
+  //   // }
+  //
+  //   return addresses;
   // }
+
+  Future<dynamic> loadData(String source, dynamic model) async {
+    String jsonString = await rootBundle.loadString(source);
+    var parsedJson = jsonDecode(jsonString);
+
+    if (model is AddressModel) {
+      AddressModel modelData = AddressModel.fromJson(parsedJson);
+      return modelData;
+    } else if (model is ProductsModel) {
+      ProductsModel modelData = ProductsModel.fromJson(parsedJson);
+      return modelData;
+    } else if (model is DealsModel) {
+      DealsModel modelData = DealsModel.fromJson(parsedJson);
+      return modelData;
+    } else {
+      CartModel modelData = CartModel.fromJson(parsedJson);
+      return modelData;
+    }
+  }
+
   bool isExistsInCart(RxList<CartModel> cart, CartModel cartItem) {
     // return cart.contains(cartItem);
     return cart.isEmpty

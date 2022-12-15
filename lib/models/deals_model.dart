@@ -1,7 +1,13 @@
 class DealsModel {
   List<Deals>? deals;
 
-  DealsModel({this.deals, required id, required title, required category, required description, required price});
+  DealsModel(
+      {this.deals,
+      required id,
+      required title,
+      required category,
+      required description,
+      required price});
 
   DealsModel.fromJson(Map<String, dynamic> json) {
     if (json['deals'] != null) {
@@ -32,12 +38,13 @@ class Deals {
 
   Deals(
       {this.title,
-        this.id,
-        this.description,
-        this.time,
-        this.favorite,
-        this.price,
-        this.oldPrice, required category});
+      this.id,
+      this.description,
+      this.time,
+      this.favorite,
+      this.price,
+      this.oldPrice,
+      required category});
 
   Deals.fromJson(Map<String, dynamic> json) {
     title = json['title'];
