@@ -12,6 +12,7 @@ import '../models/cart_model.dart';
 import '../models/deals_model.dart';
 import '../models/products_model.dart';
 
+
 class GroceryScreen extends StatelessWidget {
   GroceryScreen({
     super.key,
@@ -188,14 +189,17 @@ class GroceryScreen extends StatelessWidget {
             },
           ),
           FutureBuilder(
-            future: loadData('assets/data/products.json', ProductsModel),
+            future:DefaultAssetBundle.of(context)
+                .loadString('assets/data/products.json'),
+
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasData) {
-                var showData = snapshot.data;
+                var showData = json.decode(snapshot.data!);
+
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
@@ -541,13 +545,13 @@ class GroceryScreen extends StatelessWidget {
     if (model is AddressModel) {
       AddressModel modelData = AddressModel.fromJson(parsedJson);
       return modelData;
-    } else if (model is ProductsModel) {
+    }else if (model is ProductsModel) {
       ProductsModel modelData = ProductsModel.fromJson(parsedJson);
       return modelData;
-    } else if (model is DealsModel) {
+    }else if (model is DealsModel) {
       DealsModel modelData = DealsModel.fromJson(parsedJson);
       return modelData;
-    } else {
+    }else{
       CartModel modelData = CartModel.fromJson(parsedJson);
       return modelData;
     }
