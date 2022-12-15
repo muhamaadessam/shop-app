@@ -1,0 +1,37 @@
+{
+  "deals": [
+    {
+      "title": "Iphone",
+      "id": 1,
+      "description": "2 Phone",
+      "time": "15 Minutes",
+      "favorite": true,
+      "price": 10,
+      "oldPrice": 18
+    },{
+      "title": "Samsung",
+      "description": "1 Phone",
+      "id": 2,
+      "time": "15 Minutes",
+      "favorite": true,
+      "price": 11,
+      "oldPrice": 18
+    },{
+      "title": "Infinx",
+      "description": "1 Laptop",
+      "id": 3,
+      "time": "15 Minutes",
+      "favorite": false,
+      "price": 12,
+      "oldPrice": 18
+    },{
+      "title": "Dell",
+      "description": "2 Laptop",
+      "id": 4,
+      "time": "15 Minutes",
+      "favorite": false,
+      "price": 13,
+      "oldPrice": 18
+    }
+  ]
+}

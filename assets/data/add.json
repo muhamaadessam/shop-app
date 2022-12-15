@@ -1,0 +1,12 @@
+{
+  "addresses": [
+    {
+      "address": "Home Address",
+      "details": "Mustafa St. No:2 Street x12"
+    },
+    {
+      "address": "Office Address",
+      "details": "Axis Istanbul, B2 Block, Floor 2, Office 11"
+    }
+  ]
+}
