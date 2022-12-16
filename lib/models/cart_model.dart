@@ -17,7 +17,7 @@ class CartModel extends Deals {
     final product = Products.fromJson(json);
     final quantity = json['quantity'];
     return CartModel(
-        quantity: quantity,
+        quantity: quantity?? 1,
         title: product.title,
         description: product.description,
         id: product.id,

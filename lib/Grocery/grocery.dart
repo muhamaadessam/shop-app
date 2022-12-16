@@ -189,17 +189,16 @@ class GroceryScreen extends StatelessWidget {
             },
           ),
           FutureBuilder(
-            future:DefaultAssetBundle.of(context)
-                .loadString('assets/data/products.json'),
+            future:loadData('assets/data/products.json',ProductsModel()),
 
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
-              } else if (snapshot.hasData) {
-                var showData = json.decode(snapshot.data!);
-
+              }
+              else if (snapshot.hasData) {
+                var showData = snapshot.data;
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
@@ -208,13 +207,14 @@ class GroceryScreen extends StatelessWidget {
                     children: [
                       const Text('Explore by Category'),
                       Text(
-                        'See All (${showData['categories']!.length})',
-                        style: TextStyle(fontSize: 9, color: Colors.grey),
+                        'See All (${showData.categories.length})',
+                        style: const TextStyle(fontSize: 9, color: Colors.grey),
                       ),
                     ],
                   ),
                 );
-              } else if (snapshot.hasError) {
+              }
+              else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               } else {
                 return const CircularProgressIndicator();
@@ -222,13 +222,14 @@ class GroceryScreen extends StatelessWidget {
             },
           ),
           FutureBuilder(
+            future:loadData('assets/data/products.json',ProductsModel()),
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasData) {
-                var showData = json.decode(snapshot.data!);
+                var showData = snapshot.data;
                 return Container(
                   constraints: const BoxConstraints(
                     maxHeight: 100,
@@ -253,14 +254,14 @@ class GroceryScreen extends StatelessWidget {
                           const SizedBox(
                             height: 8,
                           ),
-                          Text('${showData['categories'][index]['category']}'),
+                          Text('${showData.categories[index].category}'),
                         ],
                       ),
                     ),
                     separatorBuilder: (context, index) => const SizedBox(
                       width: 0,
                     ),
-                    itemCount: showData['categories'].length,
+                    itemCount: showData.categories.length,
                     scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
                   ),
@@ -271,23 +272,20 @@ class GroceryScreen extends StatelessWidget {
                 return const CircularProgressIndicator();
               }
             },
-            future: DefaultAssetBundle.of(context)
-                .loadString('assets/data/products.json'),
           ),
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text('Deals of the day'),
           ),
           FutureBuilder(
-            future: DefaultAssetBundle.of(context)
-                .loadString('assets/data/deals.json'),
+            future: loadData('assets/data/deals.json',DealsModel()),
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasData) {
-                var showData = json.decode(snapshot.data!);
+                var showData = snapshot.data;
                 return Container(
                   constraints: const BoxConstraints(
                     maxHeight: 110,
@@ -296,13 +294,13 @@ class GroceryScreen extends StatelessWidget {
                   child: ListView.separated(
                     itemBuilder: (context, index) {
                       var dealsItem = Deals(
-                        id: showData['deals'][index]['id'],
-                        title: showData['deals'][index]['title'],
-                        price: showData['deals'][index]['price'],
-                        category: showData['deals'][index]['category'],
-                        description: showData['deals'][index]['description'],
-                        oldPrice: showData['deals'][index]['oldPrice'],
-                        time: showData['deals'][index]['time'],
+                        id: showData.deals[index].id,
+                        title: showData.deals[index].title,
+                        price: showData.deals[index].price,
+                        description: showData.deals[index].description,
+                        oldPrice: showData.deals[index].oldPrice,
+                        time: showData.deals[index].time,
+                        category:  showData.deals[index].title,
                       );
 
                       return Row(
@@ -335,8 +333,7 @@ class GroceryScreen extends StatelessWidget {
                                               .favList
                                               .firstWhere((element) =>
                                                   element.id ==
-                                                  showData['deals'][index]
-                                                      ['id']);
+                                                      showData.deals[index].id);
 
                                           favController.favList
                                               .remove(productUpdate);
@@ -375,14 +372,14 @@ class GroceryScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${showData['deals'][index]['title']}'),
+                              Text('${showData.deals[index].title}'),
                               Text(
-                                  '${showData['deals'][index]['description']}'),
+                                  '${showData.deals[index].description}'),
                               Row(
                                 children: [
                                   const Icon(Icons.location_on_outlined),
                                   Text(
-                                      '${showData['deals'][index]['time']} Away'),
+                                      '${showData.deals[index].time} Away'),
                                 ],
                               ),
                               Row(
@@ -390,15 +387,15 @@ class GroceryScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '\$ ${showData['deals'][index]['price']}',
+                                    '\$ ${showData.deals[index].price}',
                                     style: const TextStyle(color: Colors.red),
                                   ),
                                   const SizedBox(
                                     width: 8,
                                   ),
                                   Text(
-                                    '\$ ${showData['deals'][index]['oldPrice']}',
-                                    style: const TextStyle(),
+                                    '\$ ${showData.deals[index].oldPrice}',
+                                    style: const TextStyle(decoration: TextDecoration.lineThrough,),
                                   ),
                                   const SizedBox(
                                     width: 32,
@@ -407,21 +404,17 @@ class GroceryScreen extends StatelessWidget {
                                       onPressed: () async {
                                         var cartItem = CartModel(
                                           quantity: 1,
-                                          id: showData['deals'][index]['id'],
-                                          title: showData['deals'][index]
-                                              ['title'],
-                                          price: showData['deals'][index]
-                                              ['price'],
-                                          category: showData['deals'][index]
-                                              ['category'],
+                                          id: showData.deals[index].id,
+                                          title: showData.deals[index].title,
+                                          price: showData.deals[index].price,
+                                          category: showData.deals[index].title,
                                         );
                                         if (isExistsInCart(
                                             controller.cart, cartItem)) {
                                           var productUpdate = controller.cart
                                               .firstWhere((element) =>
                                                   element.id ==
-                                                  showData['deals'][index]
-                                                      ['id']);
+                                                      showData.deals[index].id);
                                           productUpdate.quantity++;
                                         } else {
                                           controller.cart.add(cartItem);
@@ -442,8 +435,7 @@ class GroceryScreen extends StatelessWidget {
                     separatorBuilder: (context, index) => const SizedBox(
                       width: 16,
                     ),
-                    itemCount: showData['deals'].length,
-                    // itemCount: showData.length,
+                    itemCount: showData.deals.length,
                     scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
                   ),
@@ -521,23 +513,6 @@ class GroceryScreen extends StatelessWidget {
     );
   }
 
-  // Future<List<Addresses>> readJsonDatabase() async {
-  //   final String rawData = await rootBundle.loadString('assets/data/add.json');
-  //   var list = json.decode(rawData);
-  //   print('list data in fun af ${list['addresses']}');
-  //
-  //   Addresses address = Addresses.fromJson(list['addresses']);
-  //   print('list data in fun be${address.address}');
-  //
-  //    List<Addresses> addresses = [];
-  //   // for (var data in list) {
-  //   //   AddressModel address = AddressModel.fromJson(data['addresses']);
-  //   //   addresses.add(address);
-  //   // }
-  //
-  //   return addresses;
-  // }
-
   Future<dynamic> loadData(String source, dynamic model) async {
     String jsonString = await rootBundle.loadString(source);
     var parsedJson = jsonDecode(jsonString);
@@ -557,6 +532,13 @@ class GroceryScreen extends StatelessWidget {
     }
   }
 
+  Future<dynamic> loadDataProducts(String source) async {
+    String jsonString = await rootBundle.loadString(source);
+    var parsedJson = jsonDecode(jsonString);
+      ProductsModel modelData = ProductsModel.fromJson(parsedJson);
+      return modelData;
+
+  }
   bool isExistsInCart(RxList<CartModel> cart, CartModel cartItem) {
     // return cart.contains(cartItem);
     return cart.isEmpty

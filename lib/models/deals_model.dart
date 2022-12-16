@@ -2,12 +2,7 @@ class DealsModel {
   List<Deals>? deals;
 
   DealsModel(
-      {this.deals,
-      required id,
-      required title,
-      required category,
-      required description,
-      required price});
+      {this.deals});
 
   DealsModel.fromJson(Map<String, dynamic> json) {
     if (json['deals'] != null) {
@@ -44,7 +39,7 @@ class Deals {
       this.favorite,
       this.price,
       this.oldPrice,
-      required category});
+       category});
 
   Deals.fromJson(Map<String, dynamic> json) {
     title = json['title'];
